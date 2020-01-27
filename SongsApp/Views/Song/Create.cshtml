@@ -1,0 +1,77 @@
+﻿@model Singer
+
+@*@{ 
+    WRONG!!
+    ViewBag.singers =["singers"];
+}*@
+    <form name="sentMessage" id="contactForm" novalidate asp-action="Create">
+
+        @*SongName*@
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Name</label>
+                <input type="text" class="form-control" placeholder="Song Name" id="name" name="SongName" required data-validation-required-message="Please enter Song name.">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+
+        @*Singer*@
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Singer</label>
+                <select asp-for="SingerId" 
+
+                        asp-items="@ViewBag.singers as SelectList" 
+
+                        class="form-control"
+
+                        name="SingerName" 
+                        asp-validation-for="Please Singer Name." >
+                    <option>Please Select Singer</option>
+
+                </select>
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+
+        @*Album Name*@
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>AlbumName</label>
+                <input type="text" class="form-control" placeholder="Album Name" id="name" name="AlbumName" required data-validation-required-message="Please Singer Name.">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+
+
+        @*Release Year*@
+        <div class="control-group">
+            <div class="form-group col-xs-12 floating-label-form-group controls">
+                <label>Release Year</label>
+                <input type="tel" class="form-control" name="ReleaseDate" placeholder="Year" id="phone" required data-validation-required-message="Please enter Year">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        @*<div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Message</label>
+                <textarea rows="5" class="form-control" placeholder="Message" id="message" required data-validation-required-message="Please enter a message."></textarea>
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>*@
+
+        @*URL*@
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Url</label>
+                <input type="text" class="form-control" placeholder="Image Url" id="name" name="ImageUrl" required data-validation-required-message="Please Image Url.">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+
+        <br>
+        <div id="success"></div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" id="sendMessageButton">Create</button>
+        </div>
+    </form>

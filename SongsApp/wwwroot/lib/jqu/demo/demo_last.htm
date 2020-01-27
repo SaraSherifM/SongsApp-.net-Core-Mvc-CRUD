@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <meta charset="UTF-8" />
+    <title>jQueue - `Last` mode</title>
+    <script src="../dist/jqu.min.js"></script>
+
+    <script>
+        var timeout = null;
+        var requestTimes = 0;
+        var delayTimes = [
+            1600,
+            800,
+            400,
+            200,
+            100
+        ];
+
+        /*
+            Here is a little fake HTTP echo interface,
+            It will echo user's input back to user. And
+            throw warning if user request too often.
+        */
+        var fakeHTTPGet = function(keyword, success) {
+            var requests = ++requestTimes;
+
+            if (timeout) {
+                alert('Request too often!');
+
+                return;
+            }
+
+            timeout = setTimeout(function() {
+                /* Simulate server response delay */
+                setTimeout(function() {
+                    success(keyword);
+
+                    console.log('[' + requests + '] Server Return: ' + keyword);
+                }, delayTimes[requests % 5]);
+
+                clearTimeout(timeout);
+                timeout = null;
+            }, 100);
+        };
+
+        /*
+            To limit request rate, we define an 'Last' queue,
+            and make it wait least 1 second before send request.
+        */
+        var alterQueuer = new jQueue(fakeHTTPGet, 'Last', 100);
+
+        var runTest = function(obj) {
+            var text = obj.value;
+
+            document.getElementById('status').innerHTML = 'Fetching';
+
+            /*
+                Notice we wrappered up the success callback function
+                so jQueue will discard older callback. Otherwise, we may
+                receive callbacks form early request which is totally unwantted.
+            */
+            alterQueuer.run(text, alterQueuer.callback(function(echo) {
+                document.getElementById('status').innerHTML = 'Keyword: ' + echo;
+            })).expired(function() {
+                console.log('Discards callback for input: ' + text);
+            });
+        };
+    </script>
+
+    <div>
+        <label>Enter text: </label>
+        <input type="text" onkeyup="runTest(this);" />
+        <br />
+        <span id="status"></span>
+    </div>
+</html>

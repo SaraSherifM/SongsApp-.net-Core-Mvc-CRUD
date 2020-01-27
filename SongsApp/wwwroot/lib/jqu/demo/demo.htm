@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    <meta charset="UTF-8" />
+    <title>jQueue</title>
+    <script src="../dist/jqu.min.js"></script>
+
+    <script>
+        var callID = 0;
+        var fakeResult = [
+            'Apple',
+            'Banana',
+            'Cherry',
+            'Elderberry',
+            'Guava',
+            'Lemon',
+            'Mango',
+            'Nut',
+            'Pear',
+            'Strawberry',
+            'Yam'
+        ];
+
+        var fakeFetch = function(curID) {
+            var newEl = document.createElement('li');
+            var text = document.createTextNode(fakeResult[parseInt(Math.random() * 10, 10)]);
+
+            newEl.appendChild(text);
+
+            document.getElementById('fruits').appendChild(newEl);
+
+            console.log('Callback ' + curID + ' done');
+        };
+
+        var updateStatus = new jQueue(function(status) {
+            document.getElementById('status').innerHTML = status;
+        }, 'Append', 100);
+
+        var test = new jQueue(function(callback) {
+            var curCID = callID++;
+
+            setTimeout(function() {
+                callback(curCID);
+            }, (Math.random() * 2000) + 2000);
+
+            updateStatus.run('Request sent');
+
+            console.log('Callback ' + curCID + ' added');
+
+            return true;
+        }, 'Alter', 800);
+
+        var runTest = function() {
+            test.run(fakeFetch).result(function() {
+                updateStatus.run('Request is sent');
+            }).done(function() {
+                updateStatus.run('Request is finished');
+            }).fail(function() {
+                updateStatus.run('Request is failed');
+            }).callback(function(callbackID, callbackResult) {
+                updateStatus.run('Callback ' + callbackID + ' is finished');
+            }.expired(function() {
+                updateStatus.run('Request expired');
+            }));
+        };
+    </script>
+
+    <ul id="fruits"></ul>
+
+    <div>
+        <button onclick="runTest();">Pick a fruit</button>
+        <span id="status"></span>
+    </div>
+</html>

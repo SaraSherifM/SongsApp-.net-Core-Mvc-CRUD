@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+    <meta charset="UTF-8" />
+    <title>jQueue - `Block` mode</title>
+    <script src="../dist/jqu.min.js"></script>
+
+    <script>
+        var timeout = null;
+        var requestID = 0;
+        /*
+            Here is a little fake HTTP echo interface,
+            It will echo user's input back to user. And
+            throw warning if user request too often.
+        */
+        var fakeHTTPGet = function(id, success) {
+            if (timeout) {
+                alert('Request too often!');
+
+                return;
+            }
+
+            timeout = setTimeout(function() {
+                success(id);
+
+                document.getElementById('status').innerHTML =
+                    'Server Return: ' + id;
+
+                clearTimeout(timeout);
+                timeout = null;
+            }, 3000);
+        };
+
+        /*
+            `Block` mode will wait until our execute function is fully completed
+            before accept another call.
+
+            Fully Completed means, the execute function is called and returned,
+            and all callbacks which been given as parameter of execute function
+            is called.
+        */
+        var blockQueuer = new jQueue(fakeHTTPGet, 'Block', 1000);
+
+        var runTest = function(obj) {
+            var curRequestID = ++requestID;
+
+            obj.value = 'Sending ' + curRequestID;
+
+            /*
+                Notice we wrappered up the success callback function
+                so jQueue will discard older callback. Otherwise, we may
+                receive callbacks form early request which is totally unwantted.
+            */
+            blockQueuer.run(curRequestID, blockQueuer.cb(function(echo) {
+                obj.value = 'Server returned ' + echo + '. You can click again now.';
+            })).expired(function() {
+                console.log('Discards callback for input: ' + curRequestID);
+            });
+        };
+    </script>
+
+    <div>
+        <label>Click: </label>
+        <input type="button" onclick="runTest(this);" value="Click me" />
+        <br />
+        <span id="status"></span>
+    </div>
+</html>

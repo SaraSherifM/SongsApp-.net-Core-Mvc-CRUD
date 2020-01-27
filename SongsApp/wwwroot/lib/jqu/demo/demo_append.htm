@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <meta charset="UTF-8" />
+    <title>jQueue - `Append` mode</title>
+    <script src="../dist/jqu.min.js"></script>
+
+    <script>
+        var count = 0;
+
+        /*
+            To limit request rate, we define an 'Last' queue,
+            and make it wait least 1 second before send request.
+        */
+        var appendQueuer = new jQueue(function() {
+            count++;
+
+            document.getElementById('status').innerHTML = '+' + count;
+        }, 'Append', 1000);
+
+        var runTest = function(obj) {
+            appendQueuer.run();
+        };
+    </script>
+
+    <div>
+        <input type="button" onclick="runTest(this);" value="Click me" />
+        <br />
+        <span id="status"></span>
+    </div>
+</html>
